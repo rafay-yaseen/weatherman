@@ -120,11 +120,36 @@ def year_report(directory, year):
 
 
 def month_report(directory, month, dict):
-    weather_data_list=read_data_from_file_month(directory, month, dict)
-    weather_stats=weather_calculation(weather_data_list)
-    print("Highest Average:", int(weather_stats.highest_average_temp),"C")
-    print("Lowest Average:", int(weather_stats.lowest_average_temp),"C")
-    print("Average Mean Humidity :", int(weather_stats.average_mean_humidity),"%")
+    weather_data_list = read_data_from_file_month(directory, month, dict)
+    weather_stats = weather_calculation(weather_data_list)
+    print("Highest Average:", int(weather_stats.highest_average_temp), "C")
+    print("Lowest Average:", int(weather_stats.lowest_average_temp), "C")
+    print("Average Mean Humidity :", int(
+        weather_stats.average_mean_humidity), "%")
+
+
+def chart_report(directory, month, dict):
+    weather_data_list = read_data_from_file_month(directory, month, dict)
+    for reading in weather_data_list:
+        max_temp = reading.max_temp
+        min_temp = reading.min_temp
+        day = reading.date.split("-")
+        plus_signs = "\033[91m" + "+" * int(max_temp) + "\033[0m"
+        print(day[2], " ", plus_signs, reading.max_temp, "C")
+        plus_signs = None
+        plus_signs = "\033[94m" + "+" * int(min_temp)+"\033[0m"
+        print(day[2], " ", plus_signs, reading.min_temp, "C")
+
+    print("///For Bonus Task////")
+    for reading in weather_data_list:
+        max_temp = reading.max_temp
+        min_temp = reading.min_temp
+        day = reading.date.split("-")
+        plus_sign_red = "\033[91m" + "+" * int(max_temp) + "\033[0m"
+        plus_sign_blue = "\033[94m" + "+" * int(min_temp)+"\033[0m"
+        print(day[2], " ", plus_sign_red, plus_sign_blue,
+              reading.min_temp, "C -", reading.max_temp, "C")
+
 
 def main():
 
@@ -161,6 +186,7 @@ def main():
         month_report(args.directory, args.month, MONTH_NUMBER_TO_NAME)
     if args.chart:
         print("Chart is entered")
+        chart_report(args.directory, args.chart, MONTH_NUMBER_TO_NAME)
 
 
 if __name__ == "__main__":
