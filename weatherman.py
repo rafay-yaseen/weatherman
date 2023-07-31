@@ -1,82 +1,11 @@
 import argparse
 import os
-
-
-class WeatherData:
-    date = 0
-    max_temp = 0
-    mean_temp = 0
-    min_temp = 0
-    max_humidity = 0
-    mean_humidity = 0
-    min_humidity = 0
-
-    def __init__(self, date, max_temp, mean_temp, min_temp, max_humidity, mean_humidity, min_humidity):
-        self.date = date
-        self.max_temp = max_temp
-        self.mean_temp = mean_temp
-        self.min_temp = min_temp
-        self. max_humidity = max_humidity
-        self. mean_humidity = mean_humidity
-        self. min_humidity = min_humidity
-
-
-class WeatherCalculation:
-    highest_temp = float('-inf')
-    lowest_temp = float('inf')
-    most_humidity = 0
-    highest_temp_date = 0
-    lowest_temp_date = 0
-    most_humidity_date = 0
-    lowest_average_temp = 0
-    highest_average_temp = 0
-    average_mean_humidity = 0
-
-    def __init__(self):
-        highest_temp = 0
-        lowest_temp = 0
-        most_humidity = 0
-        highest_temp_date = 0
-        lowest_temp_date = 0
-        most_humidity_date = 0
-        lowest_average_temp = 0
-        highest_average_temp = 0
-        average_mean_humidity = 0
-
-
-def read_data_from_file_year(directory, year):
-    weather_data_list = []
-    file_name = "Murree_weather_"+year
-    for filename in os.listdir(directory):
-        if file_name in filename:
-            with open(os.path.join(directory, filename)) as file:
-                file.readline()
-                for line in file:
-                    list = line.split(",")
-                    weather_data_list.append(WeatherData(
-                        list[0], list[1], list[2], list[3], list[7], list[8], list[9]))
-    return weather_data_list
-
-
-def read_data_from_file_month(directory, month, dict):
-    weather_data_list = []
-    list_month = month.split("/")
-    month_name = list_month[1]
-    month_name = int(month_name)
-    file_name = "Murree_weather_"+list_month[0]+"_" + dict.get(month_name)
-    for filename in os.listdir(directory):
-        if file_name in filename:
-            with open(os.path.join(directory, filename)) as file:
-                file.readline()
-                for line in file:
-                    list = line.split(",")
-                    weather_data_list.append(WeatherData(
-                        list[0], list[1], list[2], list[3], list[7], list[8], list[9]))
-    return weather_data_list
-
+import constants
+import filereading
+import weathercal
 
 def weather_calculation(relevant_data):
-    weather_stats = WeatherCalculation()
+    weather_stats = weathercal.WeatherCalculation()
     total_max_temp = 0
     total_min_temp = 0
     total_humidity = 0
@@ -109,7 +38,7 @@ def weather_calculation(relevant_data):
 
 
 def year_report(directory, year):
-    weather_data_list = read_data_from_file_year(directory, year)
+    weather_data_list = filereading.read_data_from_file_year(directory, year)
     weather_stats = weather_calculation(weather_data_list)
     print("Max temp :", weather_stats.highest_temp,
           "C on", weather_stats.highest_temp_date)
@@ -117,19 +46,23 @@ def year_report(directory, year):
           "C on", weather_stats.lowest_temp_date)
     print("Most Humidity :", weather_stats.most_humidity,
           "%", "on ", weather_stats.most_humidity_date)
+    line="_"*50
+    print(line)
 
 
 def month_report(directory, month, dict):
-    weather_data_list = read_data_from_file_month(directory, month, dict)
+    weather_data_list = filereading.read_data_from_file_month(directory, month, dict)
     weather_stats = weather_calculation(weather_data_list)
     print("Highest Average:", int(weather_stats.highest_average_temp), "C")
     print("Lowest Average:", int(weather_stats.lowest_average_temp), "C")
     print("Average Mean Humidity :", int(
         weather_stats.average_mean_humidity), "%")
+    line="_"*50
+    print(line)
 
 
 def chart_report(directory, month, dict):
-    weather_data_list = read_data_from_file_month(directory, month, dict)
+    weather_data_list = filereading.read_data_from_file_month(directory, month, dict)
     for reading in weather_data_list:
         max_temp = reading.max_temp
         min_temp = reading.min_temp
@@ -149,24 +82,12 @@ def chart_report(directory, month, dict):
         plus_sign_blue = "\033[94m" + "+" * int(min_temp)+"\033[0m"
         print(day[2], " ", plus_sign_red, plus_sign_blue,
               reading.min_temp, "C -", reading.max_temp, "C")
+    line="_"*50
+    print(line)
 
 
 def main():
 
-    MONTH_NUMBER_TO_NAME = {
-        1: "Jan",
-        2: "Feb",
-        3: "Mar",
-        4: "Apr",
-        5: "May",
-        6: "Jun",
-        7: "Jul",
-        8: "Aug",
-        9: "Sep",
-        10: "Oct",
-        11: "Nov",
-        12: "Dec"
-    }
     ap = argparse.ArgumentParser()
     ap.add_argument(
         "directory", help="Path to the directory that contains weather file")
@@ -183,10 +104,12 @@ def main():
         year_report(args.directory, args.year)
     if args.month:
         print("Month is entered")
-        month_report(args.directory, args.month, MONTH_NUMBER_TO_NAME)
+        month_report(args.directory, args.month,
+                     constants.MONTH_NUMBER_TO_NAME)
     if args.chart:
         print("Chart is entered")
-        chart_report(args.directory, args.chart, MONTH_NUMBER_TO_NAME)
+        chart_report(args.directory, args.chart,
+                     constants.MONTH_NUMBER_TO_NAME)
 
 
 if __name__ == "__main__":
