@@ -1,11 +1,8 @@
-import argparse
-import os
-import constants
-import filereading
-import weathercal
+from weatherman_packages import constants
+from weatherman_packages import filereading
 
 def weather_calculation(relevant_data):
-    weather_stats = weathercal.WeatherCalculation()
+    weather_stats = constants.WeatherCalculation()
     total_max_temp = 0
     total_min_temp = 0
     total_humidity = 0
@@ -50,8 +47,8 @@ def year_report(directory, year):
     print(line)
 
 
-def month_report(directory, month, dict):
-    weather_data_list = filereading.read_data_from_file_month(directory, month, dict)
+def month_report(directory, month, Month):
+    weather_data_list = filereading.read_data_from_file_month(directory, month, Month)
     weather_stats = weather_calculation(weather_data_list)
     print("Highest Average:", int(weather_stats.highest_average_temp), "C")
     print("Lowest Average:", int(weather_stats.lowest_average_temp), "C")
@@ -61,8 +58,8 @@ def month_report(directory, month, dict):
     print(line)
 
 
-def chart_report(directory, month, dict):
-    weather_data_list = filereading.read_data_from_file_month(directory, month, dict)
+def chart_report(directory, month,Month):
+    weather_data_list = filereading.read_data_from_file_month(directory, month, Month)
     for reading in weather_data_list:
         max_temp = reading.max_temp
         min_temp = reading.min_temp
@@ -84,33 +81,4 @@ def chart_report(directory, month, dict):
               reading.min_temp, "C -", reading.max_temp, "C")
     line="_"*50
     print(line)
-
-
-def main():
-
-    ap = argparse.ArgumentParser()
-    ap.add_argument(
-        "directory", help="Path to the directory that contains weather file")
-    ap.add_argument(
-        "-a", "--month", help="Given month display the average highest temperature, average lowest temperature, average mean humidity.")
-    ap.add_argument(
-        "-e", "--year", help="Given year display the highest temperature and day, lowest temperature and day, most humid day and humidity.")
-    ap.add_argument("-c", "--chart", help="Given month draw two horizontal bar charts on the console for the highest and lowest temperature on each day. Highest in red and lowest in blue.")
-
-    args = ap.parse_args()
-
-    if args.year:
-        print("Year is entered")
-        year_report(args.directory, args.year)
-    if args.month:
-        print("Month is entered")
-        month_report(args.directory, args.month,
-                     constants.MONTH_NUMBER_TO_NAME)
-    if args.chart:
-        print("Chart is entered")
-        chart_report(args.directory, args.chart,
-                     constants.MONTH_NUMBER_TO_NAME)
-
-
-if __name__ == "__main__":
-    main()
+    
